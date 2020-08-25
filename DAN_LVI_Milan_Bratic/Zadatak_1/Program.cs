@@ -23,7 +23,7 @@ namespace Zadatak_1
                 try
                 {
                     Console.WriteLine("If you want to stop typing, enter 'x'");
-                    Console.WriteLine("Enter a web address in format https://www.xxx.xxx/  : ");
+                    Console.WriteLine("Enter a web address: ");
                     urlAddress = Console.ReadLine();
                     if (urlAddress == "x")
                     {
@@ -43,9 +43,9 @@ namespace Zadatak_1
                             readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
 
                         data = readStream.ReadToEnd();
-                        Console.WriteLine("Enter the name of the txt file in which you want to save the html code");
+                        Console.WriteLine("Enter the name of the html file in which you want to save the html code");
                         string htmlCode = Console.ReadLine();
-                        using (StreamWriter file = new StreamWriter(@"..\\..\\HTML\\" + htmlCode + ".txt"))
+                        using (StreamWriter file = new StreamWriter(@"..\\..\\HTML\\" + htmlCode + ".html"))
                         {
                             file.WriteLine(data);
                         }
