@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Text;
@@ -12,45 +13,73 @@ namespace Zadatak_1
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Enter a web address in format https://www.xxx.xxx/  : ");
+           
 
-            string urlAddress = Console.ReadLine();
+            string urlAddress = null;
 
-            try
+            string data = null;
+            do
             {
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
-                HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-
-                if (response.StatusCode == HttpStatusCode.OK)
+                try
                 {
-                    Stream receiveStream = response.GetResponseStream();
-                    StreamReader readStream = null;
-
-                    if (String.IsNullOrWhiteSpace(response.CharacterSet))
-                        readStream = new StreamReader(receiveStream);
-                    else
-                        readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
-
-                    string data = readStream.ReadToEnd();
-                    using (StreamWriter file = new StreamWriter(@"..\\..\\html.txt"))
+                    Console.WriteLine("If you want to stop typing, enter 'x'");
+                    Console.WriteLine("Enter a web address in format https://www.xxx.xxx/  : ");
+                    urlAddress = Console.ReadLine();
+                    if (urlAddress == "x")
                     {
-                        file.WriteLine(data);
+                        break;
                     }
-                    response.Close();
-                    readStream.Close();
+                    HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlAddress);
+                    HttpWebResponse response = (HttpWebResponse)request.GetResponse();
+
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        Stream receiveStream = response.GetResponseStream();
+                        StreamReader readStream = null;
+
+                        if (String.IsNullOrWhiteSpace(response.CharacterSet))
+                            readStream = new StreamReader(receiveStream);
+                        else
+                            readStream = new StreamReader(receiveStream, Encoding.GetEncoding(response.CharacterSet));
+
+                        data = readStream.ReadToEnd();
+                        Console.WriteLine("Enter the name of the txt file in which you want to save the html code");
+                        string htmlCode = Console.ReadLine();
+                        using (StreamWriter file = new StreamWriter(@"..\\..\\HTML\\" + htmlCode + ".txt"))
+                        {
+                            file.WriteLine(data);
+                        }
+                        response.Close();
+                        readStream.Close();
+                    }
+
                 }
+                catch (UriFormatException)
+                {
+                    Console.WriteLine("Wrong web address");
+                }
+                catch (Exception)
+                {
+                    Console.WriteLine("Error");
+                }
+            } while (urlAddress != "x");
+           
 
-            }
-            catch (UriFormatException)
-            {
-                Console.WriteLine("Wrong web address");
-            }
-            catch (Exception)
-            {
-                Console.WriteLine("Error");
-            }
+            Console.WriteLine("Do you want to zip the html file? Enter a 'zip' if you want");
+            string zip = Console.ReadLine();
 
+            if (zip == "zip")
+            {
+
+                File.Delete(@"..\..\ZIPPED.zip");
+
+                ZipFile.CreateFromDirectory(@"..\..\HTML\", @"..\..\ZIPPED.zip");
+               
+                Console.WriteLine("You have successfully zipped the file");
+            }
+            Console.WriteLine("Press enter to exit the program");
             Console.ReadLine();
         }
+
     }
 }
